@@ -21,8 +21,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      # Ejecuta el script de creación de tablas al iniciar
-      - ./database/01_schema_ddl.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      # Ejecuta el script de inicialización completa al crear la base de datos
+      - ./database/00_init_complete.sql:/docker-entrypoint-initdb.d/00_init.sql
     networks:
       - gobierno_net
     # Healthcheck: Verifica que Postgres esté listo antes de iniciar otros servicios
