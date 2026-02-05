@@ -40,6 +40,8 @@ docker logs catalogo_etl -f
 📊 54 servicios cargados
 ```
 
+**⚠️ ¿No se cargaron los datos?** Consulta la [Guía de Solución de Problemas](TROUBLESHOOTING.md)
+
 ### Opción 2: Despliegue Paso a Paso
 
 ```bash
