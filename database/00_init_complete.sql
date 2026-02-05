@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS cat_metadata_funcional (
     ejemplos TEXT,
     responsable VARCHAR(100),
     reglas_negocio TEXT,
-    categoria VARCHAR(50),
     fecha_actualizacion DATE DEFAULT CURRENT_DATE,
     version VARCHAR(10) DEFAULT '6.0',
     estado VARCHAR(20) DEFAULT 'Activo'
@@ -245,7 +244,6 @@ CREATE INDEX IF NOT EXISTS idx_ubicacion_tipo ON dim_ubicacion(tipo_sede);
 CREATE INDEX IF NOT EXISTS idx_requisito_codigo ON dim_requisito(codigo);
 CREATE INDEX IF NOT EXISTS idx_rel_req_orden ON rel_servicio_requisito(orden_presentacion);
 CREATE INDEX IF NOT EXISTS idx_metadata_tec_tabla ON cat_metadata_tecnica(tabla);
-CREATE INDEX IF NOT EXISTS idx_metadata_func_categoria ON cat_metadata_funcional(categoria);
 
 COMMENT ON INDEX idx_area_dominio IS 'Índice para consultas de áreas por organismo';
 COMMENT ON INDEX idx_ubicacion_dominio IS 'Índice para consultas de ubicaciones por organismo';

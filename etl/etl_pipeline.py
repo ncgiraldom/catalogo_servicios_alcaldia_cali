@@ -27,12 +27,15 @@ def load_metadata_funcional(engine, file_path):
     print("📚 Cargando METADATA FUNCIONAL...")
     try:
         df = pd.read_excel(file_path, sheet_name='CAT_METADATA_FUNCIONAL', skiprows=2)
-        df = df.dropna(subset=['ID_TERMINO'])
 
-        # Renombrar columnas
+        # Normalizar nombres de columnas para búsqueda
+        first_col = df.columns[0]
+        df = df.dropna(subset=[first_col])
+
+        # Renombrar columnas (actualizado feb 2026 - sin categoria)
         df.columns = [
             'id_termino', 'termino', 'definicion_negocio', 'campo_origen_matriz',
-            'ejemplos', 'responsable', 'reglas_negocio', 'categoria',
+            'ejemplos', 'responsable', 'reglas_negocio',
             'fecha_actualizacion', 'version', 'estado'
         ]
 
@@ -48,7 +51,8 @@ def load_metadata_tecnica(engine, file_path):
     print("🔧 Cargando METADATA TÉCNICA...")
     try:
         df = pd.read_excel(file_path, sheet_name='CAT_METADATA_TECNICA', skiprows=2)
-        df = df.dropna(subset=['ID_CAMPO'])
+        first_col = df.columns[0]
+        df = df.dropna(subset=[first_col])
 
         # Renombrar columnas
         df.columns = [
@@ -59,6 +63,20 @@ def load_metadata_tecnica(engine, file_path):
 
         # Convertir longitud a int si es posible
         df['longitud'] = pd.to_numeric(df['longitud'], errors='coerce').astype('Int64')
+
+        # Filtrar referencias a códigos que no existen en metadata funcional (MF020, MF021)
+        # Obtener códigos existentes
+        with engine.connect() as conn:
+            result = conn.execute(text("SELECT id_termino FROM catalogo.cat_metadata_funcional"))
+            codigos_existentes = set([row[0] for row in result])
+
+        # Filtrar filas con referencias inválidas
+        total_original = len(df)
+        df = df[df['id_termino_funcional'].isna() | df['id_termino_funcional'].isin(codigos_existentes)]
+        filtrados = total_original - len(df)
+
+        if filtrados > 0:
+            print(f"   ℹ️  {filtrados} registros filtrados por referencias a códigos inexistentes")
 
         df.to_sql('cat_metadata_tecnica', engine, schema='catalogo', if_exists='append', index=False)
         print(f"   ✓ {len(df)} campos técnicos documentados")
